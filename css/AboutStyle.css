@@ -1,0 +1,141 @@
+body, html {
+    overflow-x: hidden; /* Prevents Windows scrollbar thrashing inside the iframe */
+    width: 100%;
+
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+}
+
+.content-body {
+    background-color: #192a2c; 
+}
+
+.title-span {
+    flex: 1; /* Takes up remaining space */
+}
+
+.internal-title {
+    font-family: 'PixelFont', monospace;
+    font-size: 50px;
+    color: #ffffff; 
+    margin: 0; /* Removed old borders/margins so the container handles it */
+}
+
+.profile-img-container {
+    width: 250px; /* Keeps the image at a controlled size */
+    flex-shrink: 0; /* Prevents the text from squishing the image */
+    padding: 0;
+}
+
+.profile-img-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* --- BIO TEXT --- */
+.bio-text {
+    font-family: 'PixelFont', monospace; 
+    font-size: 13px; 
+    font-weight: normal; 
+    color: #fff;             
+    width: 100%;  
+    line-height: 1.6;         
+    margin: 0 0 50px 0; /* Pushes the favorite projects section down */               
+    padding: 8px 10px; 
+}
+
+.section-title {
+    font-family: 'PixelFont', monospace; 
+    font-size: 32px;
+    color: #fff; 
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 2px solid #ffffff;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+}
+
+/* --- MOBILE RESPONSIVENESS --- */
+@media (max-width: 800px) {
+    .hero-header {
+        flex-direction: column-reverse; /* Stacks image above title on small screens */
+        text-align: center;
+    }
+    .profile-img-container {
+        width: 200px;
+    }
+}
+
+/* ========================================================= */
+/* --- FAVORITE PROJECTS: CUSTOM GRID LAYOUT --- */
+/* ========================================================= */
+
+.favorite-projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    align-items: stretch;
+}
+
+/* --- 1. THE DEFAULT UNEXPANDED STATE --- */
+
+/* Force Gastro (1st item) to span 2 rows on the left side */
+.favorite-projects-grid .project-card:nth-child(1):not(.expanded) {
+    grid-row: span 2;
+}
+
+/* Ensure the Gastro thumbnail stretches to fill that tall left space */
+.favorite-projects-grid .project-card:nth-child(1):not(.expanded) .media-thumb {
+    height: 100%;
+    flex-grow: 1;
+    object-fit: cover; /* Crops the edges cleanly so it doesn't squish */
+}
+
+/* Keep the animation projects perfectly shaped on the right */
+.favorite-projects-grid .project-card:not(.expanded) .media-thumb {
+    object-fit: cover;
+    aspect-ratio: 16 / 9;
+}
+
+
+/* --- 2. THE EXPANDED INTERACTION --- */
+
+/* When ANY project is clicked, it jumps to the top and spans both columns */
+.favorite-projects-grid .project-card.expanded {
+    grid-column: 1 / -1; /* Spans left to right */
+    grid-row: auto; /* Resets the row math */
+    order: -1; /* THE MAGIC FIX: Mathematically forces it to jump above the other two! */
+}
+
+/* Give the expanded videos a cinematic wrapper */
+.favorite-projects-grid .project-card.expanded .expanded-media {
+    background-color: #111818;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 2.3 / 1; 
+    overflow: hidden;
+    position: relative;
+}
+
+/* Keep the video locked to 16:9 inside the cinematic wrapper */
+.favorite-projects-grid .project-card.expanded .expanded-media > iframe {
+    position: absolute;
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    aspect-ratio: 16 / 9;
+    border: none;
+}
+
+/* --- RESPONSIVE MOBILE ADJUSTMENT --- */
+@media (max-width: 800px) {
+    .favorite-projects-grid {
+        grid-template-columns: 1fr; /* Stack everything vertically on small screens */
+    }
+    .favorite-projects-grid .project-card:nth-child(1):not(.expanded) {
+        grid-row: auto; /* Turn off the 2-row stretch */
+    }
+}

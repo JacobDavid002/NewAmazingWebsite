@@ -1,0 +1,172 @@
+/* ========================================================= */
+/* --- FILM & ANIMATION SPECIFIC STYLES --- */
+/* (Everything else is handled by app-core.css!) */
+/* ========================================================= */
+body, html {
+    overflow-x: hidden; /* Prevents Windows scrollbar thrashing inside the iframe */
+    width: 100%;
+
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+}
+/* --- OVERRIDE: DARK THEME --- */
+/* F&A uses a darker aesthetic than the main OS */
+.content-body {
+    background-color: #192a2c; 
+}
+
+.DescTEXT {
+    font-size: 17px;
+    font-family: 'SneakyFont', monospace; 
+}
+
+.masonry-item {
+    background-color: #111818; 
+    border-color: #111818;
+}
+
+.project-name {
+    background-color: #111818;
+}
+
+/* --- TOP HEADER SHOWREEL (BLACK BOX) --- */
+.header-block {
+    background-color: #000000; 
+    padding: 20px; 
+    width: 100%;
+    margin-bottom: 20px; 
+}
+
+.embed-wrapper {
+    position: relative;
+    width: 80%; 
+    max-width: 100%;
+    margin: 0 auto;
+    padding-bottom: 45%; 
+}
+
+.embed-wrapper iframe {
+    position: absolute;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    border: none;
+}
+
+/* --- STANDARD EXPANDED VIDEO SHAPE --- */
+.expanded-media iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: none;
+}
+
+/* --- EXTENDED DESCRIPTION TEXT COLUMNS --- */
+.DescLARGE {
+    font-family: 'PixelFont', monospace; 
+    font-size: 30px; 
+    font-weight: normal; 
+    color: #fff;             
+    width: 100%;  
+    line-height: 1.6;         
+    margin: 0;               
+    padding: 8px 10px; 
+}
+
+.desc-columns {
+    display: flex;
+    gap: 30px; 
+    margin-top: 15px;
+}
+
+.desc-left {
+    flex: 1; 
+}
+
+.desc-right {
+    flex: 2; 
+}
+
+/* --- BUX FIX (1/2): Targeted grid styles --- */
+.media-right .gallery-item {
+    border: none; 
+    height: 100%;
+    overflow: hidden;
+}
+
+/* --- BUG FIX (2/2): Forces the images to fill the cells perfectly --- */
+.media-right.project-gallery-6imgs img {
+    width: 100% !important; /* Force override of any universal image rules */
+    height: 100% !important; 
+    object-fit: cover;      /* Zooms and crops perfectly into the square */
+    display: block;         /* Removes standard image gap below */
+    border-bottom: none;    /* Removes the standard retro border for a cleaner grid */
+}
+
+/* --- RESPONSIVE MOBILE LAYOUT --- */
+@media (max-width: 600px) {
+    .embed-wrapper {
+        width: 100%; 
+        padding-bottom: 56.25%; 
+    }
+    
+    .desc-columns {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .split-media {
+        flex-direction: column;
+    }
+}
+
+.video-split-layout {
+    display: flex;
+    gap: 20px;
+    align-items: center; /* Vertically center them relative to each other */
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* --- THE WIDE VIMEO VIDEO --- */
+.video-left {
+    flex: 2; /* Takes up 2 parts of the available space */
+    min-width: 0; /* Prevents flexbox from forcing it too wide */
+}
+
+/* --- OVERRIDE FOR YOUTUBE/IFRAMES IN THE RIGHT COLUMN --- */
+.video-right iframe {
+    width: auto;
+    height: 100%; 
+    
+    /* Forces standard YouTube horizontal shape */
+    aspect-ratio: 9 / 16; 
+    
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* --- THE TALL INSTAGRAM REEL --- */
+.video-right {
+    flex: 1; /* Takes up 1 part of the available space */
+    display: flex;
+    justify-content: center; /* Centers the embed inside its column */
+    min-width: 0;
+}
+
+/* Overrides Instagram's aggressive inline styles so it fits the column */
+.video-right .instagram-media {
+    margin: 0 !important;
+    min-width: 100% !important; /* Force it to fill the flex column */
+}
+
+
+/* --- MOBILE SAFETY NET --- */
+/* On smaller screens, stack the videos instead of squishing them */
+@media (max-width: 800px) {
+    .video-split-layout {
+        flex-direction: column;
+    }
+}

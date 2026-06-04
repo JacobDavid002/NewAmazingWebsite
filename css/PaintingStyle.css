@@ -1,0 +1,319 @@
+/* ========================================================= */
+/* --- PAINTING SPECIFIC STYLES --- */
+/* ========================================================= */
+
+body, html {
+    background-color: #dcdcdc;
+    overflow-x: hidden; /* Prevent Windows scrollbar glitching inside the iframe */
+    width: 100%;
+
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+}
+
+/* --- THE MAIN WINDOW LAYOUT (Side-by-Side) --- */
+.painting-split-layout {
+    display: flex;
+    gap: 40px; 
+    align-items: flex-start; 
+    
+    /* Forces the paintings to neatly drop BELOW the text if the window gets tiny! */
+    flex-wrap: wrap; 
+}
+
+/* --- THE LEFT SIDEBAR --- */
+.painting-sidebar {
+    flex: 1; 
+    min-width: 200px; 
+    
+    position: sticky; 
+    
+    /* THE Y-AXIS (VERTICAL) CENTERING */
+    top: 50%; 
+    transform: translateY(-50%); 
+    
+    container-type: inline-size;
+}
+
+/* --- THE TITLE TEXT --- */
+.internal-title {
+    font-family: 'PixelFont', monospace; 
+    font-size: max(20px, 10cqi); 
+    color: #192a2c; 
+    
+    /* THE X-AXIS (HORIZONTAL) CENTERING */
+    text-align: left; 
+    
+    /* Center the dashed border nicely under the centered text */
+    border-bottom: 2px dashed #192a2c; 
+    padding-bottom: 10px; 
+    
+    margin-top: 0;
+    margin-bottom: 30px;
+    line-height: 0.9;
+    word-break: break-word; 
+}
+
+/* --- THE AUTO-COLLAPSING GALLERY GRID --- */
+.painting-grid {
+    flex: 2; 
+    min-width: 300px; 
+    display: grid;
+    gap: 20px;
+    align-items: center; 
+    
+    /* THE 2-COLUMN MAX TRICK! */
+    /* This forces the columns to exactly 50% width (max 2 columns). 
+       If 50% shrinks below 200px, it immediately drops to 1 column! */
+    grid-template-columns: repeat(auto-fit, minmax(max(200px, calc(50% - 20px)), 1fr));
+}
+
+.painting-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: #192a2c; 
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Make it obvious they can be clicked! */
+.zoomable-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-bottom: 2px solid #192a2c;
+    cursor: pointer;
+}
+
+.painting-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 0px rgba(25, 42, 44, 0.3);
+}
+
+/* --- THE DESCRIPTION BAR --- */
+.painting-desc {
+    font-family: 'Courier New', Courier, monospace; 
+    font-size: 13px; 
+    font-weight: bold; 
+    color: #fff;             
+    background-color: #192a2c;  
+    width: 100%;             
+    margin: 0;               
+    padding: 10px;     
+    box-sizing: border-box;
+    text-align: center;
+}
+/* ========================================================= */
+/* --- NEW ZOOM OVERLAY STYLES --- */
+/* ========================================================= */
+
+.painting-zoom-overlay {
+    display: none; 
+    position: fixed; 
+    top: 0; left: 0; width: 100%; height: 100%;
+    
+    /* A slightly darker background for drama */
+    background-color: rgba(14, 23, 25, 0.98); 
+    
+    z-index: 9999; /* Ensure it's above everything */
+    
+    /* Central Alignment for the Image */
+    justify-content: center;
+    align-items: center;
+    
+    padding: 20px;
+    box-sizing: border-box;
+    cursor: pointer; /* Indicates you can click background to close */
+}
+
+/* The box containing Image + Text */
+.zoom-content-wrapper {
+    display: inline-flex; /* Shrinks container precisely around the image */
+    position: relative; /* This is the anchor point for the absolute text! */
+    justify-content: center;
+    align-items: center;
+    cursor: default; /* Stops 'hand' cursor from appearing on the actual content */
+}
+
+/* THE CENTEAL IMAGE */
+.zoom-content-wrapper img {
+    /* Set maximum size limits, leaving room for the close button above and margin below */
+    max-width: 75vw; 
+    max-height: 85vh; 
+    object-fit: contain; 
+    
+    display: block;
+    
+    /* A bold frame to make it feel expensive */
+    border: 5px solid #fff; 
+    box-shadow: 15px 15px 0px rgba(0,0,0,0.5); 
+}
+
+/* THE TEXT BLOCK (White, Pixel Font, anchored RIGHT) */
+.zoom-text-display {
+    position: absolute; /* Rips text out of flow so it doesn't affect centering! */
+    
+    /* Pin left edge exactly at the right edge of the image wrapper */
+    left: calc(100% + 30px); 
+    
+    top: 0; /* Aligns text start with the image start */
+    
+    width: 300px; /* Fixed width stops long text from stretching forever */
+    
+    font-family: 'PixelFont', monospace; /* Uses your custom font */
+    color: #ffffff;
+    font-size: 24px;
+    line-height: 1.3;
+    text-align: left;
+    
+    /* Ensures text doesn't flow off the far right edge of the browser */
+    word-break: break-word; 
+}
+
+.zoom-text-display p {
+    margin: 0; /* Reset default margins */
+}
+
+/* ========================================================= */
+/* --- EXTRA SUPER-ZOOM MODE --- */
+/* ========================================================= */
+
+/* 1. Add a magnifying glass cursor to the normal image state */
+.zoom-content-wrapper img {
+    cursor: zoom-in;
+    transition: all 0.3s ease; 
+}
+
+/* 2. When the overlay gets the 'is-super-zoomed' class via JavaScript: */
+.painting-zoom-overlay.is-super-zoomed {
+    align-items: flex-start; /* Pushes the image to the top so you can scroll */
+    padding: 0; 
+    overflow-y: auto; /* Turns on the mouse scrollbar */
+    overflow-x: hidden; /* Stops horizontal scrolling glitches */
+}
+
+.painting-zoom-overlay.is-super-zoomed .zoom-content-wrapper {
+    width: 100%;
+    display: block; /* Turns off flexbox so the image can take over */
+}
+
+/* 3. Make the image massive (The Fix!) */
+.painting-zoom-overlay.is-super-zoomed img {
+    width: 100% !important; /* Force to fill 100% of the wrapper (ignores scrollbar!) */
+    height: auto !important; 
+    max-width: none !important;
+    max-height: none !important; 
+    border: none; 
+    box-shadow: none;
+    cursor: zoom-out; 
+    display: block; /* Ensures no weird inline text gaps below the image */
+}
+
+/* 4. Hide the text while in Super Zoom */
+.painting-zoom-overlay.is-super-zoomed .zoom-text-display {
+    display: none;
+}
+
+/* ========================================================= */
+/* --- MOBILE SAFETY NET --- */
+/* ========================================================= */
+
+@media (max-width: 900px) {
+    .painting-zoom-overlay {
+        /* Align items to top on mobile so long text is scrollable */
+        align-items: flex-start; 
+        padding-top: 80px; /* Room for the close button */
+        overflow-y: auto; /* Allows scrolling if content is taller than screen */
+    }
+
+    .zoom-content-wrapper {
+        display: flex;
+        flex-direction: column-reverse; /* Stacks image, then text below it */
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+    }
+
+    .zoom-content-wrapper img {
+        max-width: 95vw;
+        max-height: 60vh; /* Shorter limit to leave room for text below */
+        position: static; /* Restores standard flow */
+    }
+
+    .zoom-text-display {
+        position: static; /* Turns off absolute positioning */
+        width: 100%;
+        max-width: 500px;
+        font-size: 16px; /* Scales font down for mobile */
+        text-align: center;
+        margin-top: 25px;
+        margin-bottom: 25px;
+    }
+
+    /* ========================================================= */
+    /* --- MOBILE PAINTING LAYOUT (SINGLE COLUMN & TOP TITLE) --- */
+    /* ========================================================= */
+
+    /* 1. Force the entire window to stack strictly from top to bottom */
+    .painting-split-layout {
+        flex-direction: column; 
+        gap: 20px; 
+    }
+
+    /* 2. Break the Sidebar out of its sticky middle position so it jumps to the top */
+    .painting-sidebar {
+        width: 100%;
+        min-width: 100%; /* Overrides the desktop 200px minimum */
+        
+        position: relative; /* Turns off the sticky behavior */
+        top: 0;             /* Resets the Y-axis centering */
+        transform: none;    /* Turns off the vertical offset */
+        
+        margin-bottom: 10px;
+    }
+
+    /* 3. Reformat the title text so it spans the top beautifully */
+    .internal-title {
+        text-align: center; /* Center the text instead of locking it left */
+        font-size: 32px;    /* Optional: Standardize the font size for phones */
+        border-bottom: 2px dashed #192a2c; /* Keeps your retro underline */
+        padding-bottom: 15px;
+        margin-bottom: 0;
+    }
+
+    /* 4. THE 1-COLUMN FIX: Force the grid to forget the math and use 1 column */
+    .painting-grid {
+        width: 100%;
+        min-width: 100%; /* Overrides the desktop 300px minimum */
+        
+        /* This is the magic bullet. It overrides the auto-fit math completely! */
+        grid-template-columns: 1fr; 
+    }
+    /* ========================================== */
+    /* --- NEW: MOBILE SUPER-ZOOM BEHAVIOR --- */
+    /* ========================================== */
+
+    .painting-zoom-overlay.is-super-zoomed {
+        /* We are filling the height, so we want the image vertically centered, 
+           not anchored to the top edge! */
+        align-items: center !important; 
+        
+        /* 1. Disable the desktop's vertical scrollbar */
+        overflow-y: hidden !important; 
+        
+        /* 2. ENABLE horizontal scrolling (just in case a landscape photo is forced to height!) */
+        overflow-x: auto !important; 
+        -webkit-overflow-scrolling: touch; /* Forces smooth elastic scrolling on iPhones */
+    }
+
+    .painting-zoom-overlay.is-super-zoomed img {
+        /* 3. THE MAGICAL FLIP: Change 100vw (width) to 100vh (HEIGHT)! */
+        height: 100vh !important; /* Force to fill 100% of the screen height */
+        width: auto !important;  /* Allow the width to calculate naturally based on height */
+        
+        /* Ensure the limits don't fight our new rule */
+        max-width: none !important; 
+        max-height: 100vh !important; 
+    }
+}

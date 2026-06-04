@@ -1,0 +1,200 @@
+body, html {
+    background-color: #ffffff;
+    overflow-x: hidden; /* Prevents Windows scrollbar thrashing inside the iframe */
+    width: 100%;
+
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+}
+
+/* ========================================================= */
+/* --- GRAPHIC DESIGN SPECIFIC STYLES --- */
+/* (Everything else is handled by app-core.css!) */
+/* ========================================================= */
+
+/* --- LAYOUT 1: TWO IMAGES SIDE-BY-SIDE (50/50 Split) --- */
+.gd-two-col-images {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    width: 100%;
+}
+
+.gd-two-col-images img {
+    width: calc(50% - 10px); 
+    height: auto;
+    object-fit: cover; 
+    border-bottom: 2px solid #192a2c; 
+}
+
+/* --- LAYOUT 2: VERTICAL MEDIA (Stacked Images) --- */
+.virtical-media {
+    flex: 2; 
+    width: 100%; 
+    height: auto;
+    display: grid;
+    grid-template-rows: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.virtical-media img {
+    width: 100%;        
+    height: 100%;       
+    object-fit: cover;  
+    display: block;     
+}
+
+/* --- LAYOUT 3: 6-IMAGE GRID --- */
+.project-gallery-6imgs {
+    flex: 2; 
+    width: 100%; 
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    grid-template-rows: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.project-gallery-6imgs .gallery-item {
+    width: 100%;
+    height: 100%;
+    overflow: hidden; 
+}
+
+.project-gallery-6imgs .gallery-item img {
+    width: 100% !important;  
+    height: 100% !important; 
+    object-fit: cover;       
+    border-bottom: none;     
+}
+
+/* --- MOBILE RESPONSIVENESS FOR GD GRIDS --- */
+@media (max-width: 600px) {
+    .gd-two-col-images {
+        flex-direction: column;
+    }
+    
+    .gd-two-col-images img {
+        width: 100%;
+    }
+}
+
+
+/* --- ANTHRO MACHINE: CUSTOM SPLIT MEDIA LAYOUT --- */
+.split-media {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    gap: 20px;
+}
+
+.media-left {
+    flex: 1; 
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+
+/* Force the YouTube Short to stay vertical! */
+.media-left iframe {
+    width: 100% !important; /* Force it to fill the column width */
+    height: auto !important; /* Let aspect-ratio decide the height */
+    aspect-ratio: 9 / 16 !important;
+    border: none;
+}
+
+/* ========================================================= */
+/* --- TRUE MASONRY OVERRIDE (For Mixed-Size Images) --- */
+/* ========================================================= */
+
+/* 1. Turn off strict Grid rows and turn on fluid Columns */
+.masonry-grid {
+    display: block !important; 
+    column-count: 2;
+    column-gap: 20px;
+}
+
+/* 2. Stop the cards from accidentally splitting across columns */
+.masonry-item {
+    display: inline-block !important; 
+    width: 100%;
+    margin-bottom: 20px;
+    height: auto !important; 
+}
+
+/* 3. When expanded, drop down and span across all columns */
+.masonry-item.expanded {
+    column-span: all !important;
+    margin-top: 10px;
+    margin-bottom: 30px;
+}
+
+/* --- RESPONSIVE ADJUSTMENTS --- */
+@media (min-width: 1300px) {
+    .masonry-grid {
+        column-count: 3; /* Use 3 columns on large desktop screens */
+    }
+}
+
+@media (max-width: 600px) {
+    .masonry-grid {
+        column-count: 1; /* Drop to 1 column on mobile */
+    }
+}
+/* ========================================================= */
+/* --- PERMANENT SHOWCASE LAYOUT (NO MASONRY) --- */
+/* ========================================================= */
+
+.gd-showcase-list {
+    display: flex;
+    flex-direction: column;
+    gap: 40px; /* Gives nice breathing room between projects */
+}
+
+.gd-project-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* 66% Images, 33% Text */
+    gap: 30px;
+    background-color: #192a2c;
+    border: 3px solid #192a2c;
+    padding: 20px;
+}
+
+.gd-media-col {
+    width: 100%;
+}
+
+.gd-text-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.gd-project-name {
+    font-family: 'PixelFont', monospace;
+    font-size: 22px;
+    color: #fff;
+    border-bottom: 2px dashed #fff;
+    padding: 0 0 15px 0;
+    margin: 0 0 15px 0;
+}
+
+.gd-project-desc {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    color: #fff;
+    line-height: 1.6;
+    flex-grow: 1; /* Pushes the button to the absolute bottom! */
+}
+
+/* Ensure the gallery button doesn't stretch weirdly */
+.gd-text-col .gallery-btn {
+    margin-top: 20px;
+}
+
+/* --- MOBILE RESPONSIVENESS --- */
+/* Stacks the text under the images if the screen is too small */
+@media (max-width: 900px) {
+    .gd-project-row {
+        grid-template-columns: 1fr; 
+    }
+}
