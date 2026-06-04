@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Jacob Lloyd David">
+    <title>Painting & Art</title>
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/app-core.css">
+    <link rel="stylesheet" href="css/PaintingStyle.css"> 
+</head>
+<body class="content-body">
+
+<div class="content-container painting-split-layout">
+
+        <div class="painting-sidebar">
+            <p class="internal-title">Jacob<br><br>Lloyd<br><br>David<br><br>Painting</p>
+        </div>
+
+        <div class="painting-grid">
+
+        <div class="painting-card">
+                <img src="PaintingImgs/Img12.webp" alt="Painting 12" class="zoomable-img">
+                <p class="painting-desc">Unnamed. <br> Arcilic & water colour On wood. 48x60cm</p>
+            </div>
+
+         <div class="painting-card">
+                <img src="PaintingImgs/Img6.webp" alt="Painting 6" class="zoomable-img">
+                <p class="painting-desc">Unnamed. <br> Arcilic, Pen & Spraypaint On canvas. 77x102cm</p>
+            </div>
+
+         <div class="painting-card">
+                <img src="PaintingImgs/Img11.webp" alt="Painting 11" class="zoomable-img">
+                <p class="painting-desc">snooker table. <br> Arcilic & water colour On wood. 50x75cm.</p>
+            </div>
+
+        <div class="painting-card">
+                <img src="PaintingImgs/Img4.webp" alt="Painting 4" class="zoomable-img">
+                <p class="painting-desc">Unnamed. <br> Arcilic On canvas. 51x62cm</p>
+            </div>
+
+         <div class="painting-card">
+                <img src="PaintingImgs/Img8.webp" alt="Painting 8" class="zoomable-img">
+                <p class="painting-desc">Unnamed. <br> Arcilic & Spraypaint On canvas. 52x52cm</p>
+            </div>
+
+                   <div class="painting-card">
+                <img src="PaintingImgs/Img14.webp" alt="Painting 14" class="zoomable-img">
+                <p class="painting-desc">Grafton. <br> Arcilic, Pen & Spraypaint On canvas. 47x61cm</p>
+            </div>
+
+
+        <div class="painting-card">
+                <img src="PaintingImgs/Img9.webp" alt="Painting 9" class="zoomable-img">
+                <p class="painting-desc">Hello coco. <br> Arcilic & Spraypaint On canvas. 77x102cm</p>
+            </div>
+
+        <div class="painting-card">
+                <img src="PaintingImgs/Img5.webp" alt="Painting 5" class="zoomable-img">
+                <p class="painting-desc">Unnamed. <br> Arcilic, Pen & Spraypaint On canvas. 93x112cm</p>
+            </div>
+
+          <div class="painting-card">
+                <img src="PaintingImgs/Img10.webp" alt="Painting 10" class="zoomable-img">
+                <p class="painting-desc">Gavin Green <br> Arcilic, Pen & Spraypaint On canvas. 92x62cm</p>
+            </div>
+
+                   <div class="painting-card">
+                <img src="PaintingImgs/Img13.webp" alt="Painting 13" class="zoomable-img">
+                <p class="painting-desc">Little lul. <br> Arcilic, Pen & Spraypaint On canvas. 77x62cm</p>
+            </div>           
+             
+            
+         <div class="painting-card">
+                <img src="PaintingImgs/Img7.webp" alt="Painting 7" class="zoomable-img">
+                <p class="painting-desc">Your tainted comrad. <br> Arcilic, Pen & Spraypaint On canvas. 62x92cm</p>
+            </div>
+
+                    <div class="painting-card">
+                <img src="PaintingImgs/Img3.webp" alt="Painting 3" class="zoomable-img">
+                <p class="painting-desc">Rat. <br> Arcilic On canvas. 31x41cm</p>
+            </div>
+
+
+        <div class="painting-card">
+                <img src="PaintingImgs/Img1.webp" alt="Painting 1" class="zoomable-img">
+                <p class="painting-desc">Unnamed. <br> Arcilic & Pen On canvas. 20x30cm</p>
+            </div>
+
+        <div class="painting-card">
+                <img src="PaintingImgs/Img2.webp" alt="Painting 2" class="zoomable-img">
+                <p class="painting-desc">Sheep. <br> Watercolour & Pen On canvas. 41x31cm</p>
+            </div>
+
+
+        </div>
+    </div>
+<div id="zoom-overlay" class="painting-zoom-overlay">
+        
+        <div class="zoom-content-wrapper">
+            
+            <img id="zoom-img" src="" alt="Zoomed Painting">
+            
+            <div id="zoom-text-container" class="zoom-text-display">
+                </div>
+            
+        </div>
+    </div>
+
+    <script src="js/app-core.js"></script>
+
+<script>
+        const zoomOverlay = document.getElementById('zoom-overlay');
+        const zoomImg = document.getElementById('zoom-img');
+        const zoomTextContainer = document.getElementById('zoom-text-container');
+
+        // Track what zoom mode we are currently in
+        let isSuperZoomed = false; 
+
+        // Function to perform close action and reset everything
+        function closeZoom() {
+            zoomOverlay.style.display = 'none';
+            zoomImg.src = ''; 
+            zoomTextContainer.innerHTML = ''; 
+            
+            // Reset the super zoom state
+            isSuperZoomed = false;
+            zoomOverlay.classList.remove('is-super-zoomed');
+        }
+
+        // 1. When a gallery image is clicked, open the normal zoom
+        document.querySelectorAll('.zoomable-img').forEach(img => {
+            img.addEventListener('click', (e) => {
+                zoomImg.src = e.target.src; 
+                
+                const card = e.target.closest('.painting-card');
+                const description = card.querySelector('.painting-desc').innerText;
+                
+                zoomTextContainer.innerHTML = `<p>${description}</p>`;
+                zoomOverlay.style.display = 'flex'; 
+            });
+        });
+
+        // 2. THE NEW BACKGROUND CLICK: Close if clicking literally anything except the image!
+        zoomOverlay.addEventListener('click', (e) => {
+            // e.target checks exactly what element your mouse touched.
+            // If it is NOT the image, shut it down.
+            if (e.target !== zoomImg) {
+                closeZoom();
+            }
+        });
+
+        // 3. THE SUPER ZOOM MECHANIC: Clicking directly on the image
+        zoomImg.addEventListener('click', (e) => {
+            e.stopPropagation(); // Stops the background click from accidentally firing
+
+            if (!isSuperZoomed) {
+                // Not zoomed yet? Go Fullscreen!
+                isSuperZoomed = true;
+                zoomOverlay.classList.add('is-super-zoomed');
+                
+                // Force the scrollbar to the very top of the new giant image
+                zoomOverlay.scrollTop = 0; 
+            } else {
+                // Already Fullscreen? Exit completely!
+                closeZoom();
+            }
+        });
+    </script>
+</body>
+</html>

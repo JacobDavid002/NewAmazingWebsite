@@ -1,0 +1,779 @@
+@font-face {
+    font-family: 'PixelFont';
+    src: url('fonts/dogica.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SneakyFont';
+    src: url('fonts/Sneaky-Times.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Base settings for the retro feel */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh; /* Strictly sets height to the viewport window */
+    font-family: 'Courier New', Courier, monospace; 
+    /* background-color: #808080; */
+    overflow: hidden; /* Strictly prevents ANY scrolling on the main desktop */
+}
+
+.desktop {
+    width: 100vw;
+    height: 100vh;
+    position: relative; /* Keeps the absolute icons contained to the screen */
+}
+
+/* App Icon Styling */
+.app-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 120px;
+    cursor: pointer;
+    position: absolute; 
+    user-select: none; /* Prevents the text from turning blue when dragging */
+
+    touch-action: none;
+}
+
+.icon-box {
+    width: 100px;
+    height: 100px;
+    /* border: 2px solid #192a2c;; */
+    margin-bottom: 8px;
+    /* background-image: repeating-linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), repeating-linear-gradient(45deg, #000 25%, #fff 25%, #fff 75%, #000 75%, #000); */
+    background-position: 0 0, 4px 4px;
+    background-size: 8px 8px;
+}
+
+.icon-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Or 'cover' if you want it to fill the box */
+    display: block;
+
+    pointer-events: none;    /* Makes the mouse ignore the image and click the box behind it */
+    -webkit-user-drag: none; /* Specifically stops Chrome/Safari from dragging the image */
+    user-select: none;       /* Prevents accidental blue highlighting */
+}
+
+/* --- HOMEPAGE APP FONT (Black Box, White Text) --- */
+.icon-label {
+    background-color: #192a2c; /* Black box */
+    color: #ffffff;            /* White text */
+    padding: 2px 6px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    display: inline-block; 
+    letter-spacing: -1px;
+    font-family: 'PixelFont';  
+}
+
+/* --- CLICKED/ACTIVE STATE (White Box, Black Text) --- */
+.app-icon:active .icon-label {
+    background-color: #ffffff; /* Flips to White box */
+    color: #192a2c;;            /* Flips to Black text */
+}
+
+/* Pop-up Window (Modal) Styling */
+.modal {
+    display: none; 
+    position: absolute;
+    top: 20%; /* Starting position before being dragged */
+    left: 20%;
+    background-color: #ffffff;
+    border: 3px solid #192a2c;
+    box-shadow: 6px 6px 0px rgba(25, 42, 44, 0.5);
+    z-index: 10;
+    /* resize: both; */
+    overflow: hidden; /* Needed for resize to work */
+}
+
+/* Window Title Bar */
+.modal-header {
+    background-color: #ffffff;
+    border-bottom: 3px solid #192a2c;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    
+    /* --- YOUR LOVELY LINED PATTERN IS BACK! --- */
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, #000 2px, #000 4px); 
+    
+    cursor: move; 
+    user-select: none; 
+    touch-action: none;
+    
+    /* --- THE OVERLAY FIXES --- */
+    flex-shrink: 0;     /* Forces the title bar to NEVER get squished */
+    position: relative; /* Acts as an anchor point */
+    z-index: 60;        /* Stays on top of the dark zoom overlay */
+}
+
+.modal-header span {
+    background-color: #ffffff;
+    padding: 0 10px;
+    border: 2px solid #192a2c;;
+}
+
+/* --- THE DYNAMIC WINDOW FLEXBOX UPGRADE --- */
+/* Intercepts the JS 'block' command and forces Flexbox so the header never squishes! */
+.modal[style*="display: block"] {
+    display: flex !important;
+    flex-direction: column;
+}
+
+/* The Restored unified Content Area */
+.modal-content {
+    flex-grow: 1;      /* Fills whatever space is left below the header */
+    height: auto;      
+    padding: 20px;
+    font-size: 16px;
+    overflow-y: auto;  /* Brings back smooth scrolling! */
+    
+    /* --- THESE 2 LINES ARE ALSO CRITICAL --- */
+    position: relative; /* THIS IS THE CAGE. It traps the absolute child inside! */
+    overflow-x: hidden; /* Prevents an odd horizontal scrollbar while zoom box opens */
+}
+
+.close-btn {
+    background-color: #a40b0b;
+    color: #ffffff;
+    border: 2px solid #192a2c;;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace; 
+    padding: 2px 6px;
+}
+
+.close-btn:active {
+    background-color: #ffffff;;
+    color: #a40b0b;
+}
+
+.min-btn {
+    background-color: #ffffff;
+    border: 2px solid #000000;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace; 
+    padding: 2px 6px;
+}
+
+.min-btn:active {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+
+/* --- WINDOW CONTROLS GROUP --- */
+.window-controls {
+    display: flex;
+    gap: 5px; /* Adds a tiny 5px gap between the minimize and close buttons */
+
+    margin-left: auto; /* This forces the button container to push itself as far right as possible! */
+}
+
+/* --- UNIVERSAL WINDOW SIZE LIMITATIONS --- */
+
+/* 1. Everyone shares the same size rules */
+#modal-film, #modal-graphic, #modal-about, #modal-painting {
+    min-width: min(700px, calc(100vw - 40px)); 
+    min-height: min(400px, calc(100vh - 40px));
+
+    
+    /* max-width: calc(100vw - 40px);
+    max-height: calc(100vh - 40px); */
+
+
+        /* 4. THE SAFETY NET: Forces the window to shrink if the screen is too small! */
+    max-width: 96vw; /* Maximum 95% of the screen's width */
+    max-height: 96vh; /* Maximum 95% of the screen's height */
+}
+
+/* 2. Give everyone their own specific spawn coordinates! */
+#modal-film {
+    top: 1%; 
+    left: 1%;
+    width: 1350px; 
+    height: calc(100vh - 40px);
+}
+
+#modal-graphic {
+    top: 15%; 
+    left: 30%;
+
+    width: 1500px; 
+    height: calc(100vh - 300px);
+
+}
+
+#modal-about{ /* Change this to #modal-about if needed! */
+    /* 1. Anchor it to the bottom right with a 20px breathing gap */
+    bottom: 20px; 
+    right: 20px;
+    
+    /* 2. Clear out the old top/left rules so they don't fight the new ones */
+    top: auto;
+    left: auto;
+
+    /* 3. Your desired size */
+    width: 900px; 
+    height: 700px;
+    
+    /* 4. THE SAFETY NET: Forces the window to shrink if the screen is too small! */
+}
+
+
+#modal-painting {
+    /* 1. Start exactly 20px from the top and left edges */
+    top: 20px; 
+    left: 20px;
+    
+    /* 2. Screen Width/Height MINUS the 20px gap on BOTH sides (40px total) */
+    width: calc(100vw - 40px);
+    height: calc(100vh - 40px);
+    
+    /* 3. Override the universal 96vw/vh limits so it is allowed to stretch! */
+    max-width: none;
+    max-height: none;
+    
+    /* Ensure the padding/borders don't ruin our exact math */
+    box-sizing: border-box; 
+}
+
+/* --- THE ACTUAL POP-UP WINDOW BOX LIMITS --- */
+#modal-lost-eyes-gallery, #modal-Move-gallery, #modal-Alot-gallery,  #modal-Nature-gallery {
+    
+    /* --- YOUR STARTING SIZES --- */
+    width: 500px; 
+    height: 700px; /* THE FIX: Give it a strict starting height! */
+
+    /* --- DYNAMIC LIMITATIONS --- */
+    min-width: 400px; 
+    max-width: calc(100vw - 40px); 
+    max-height: calc(100vh - 100px); 
+}
+
+#modal-Anthro-gallery{
+    top: 10%; 
+    left: 50%;
+
+    /* --- YOUR STARTING SIZES --- */
+    width: 700px; 
+    height: 850px; /* THE FIX: Give it a strict starting height! */
+
+    /* --- DYNAMIC LIMITATIONS --- */
+    min-width: 400px; 
+    max-width: 1000px ;
+    max-height: 1150px ;
+}
+
+
+#modal-gastro-gallery, #modal-Paul-gallery, #modal-CSM-gallery{
+    top: 10%; 
+    left: 50%;
+
+    /* --- YOUR STARTING SIZES --- */
+    width: 800px; 
+    height: 1000px; /* THE FIX: Give it a strict starting height! */
+
+    /* --- DYNAMIC LIMITATIONS --- */
+    min-width: 400px; 
+    max-width: 1200px ;
+    max-height: 1300px ;
+}
+
+#modal-Space-gallery{
+    top: 10%; 
+    left: 50%;
+
+    /* --- YOUR STARTING SIZES --- */
+    width: 500px; 
+    height: 750px; /* THE FIX: Give it a strict starting height! */
+
+    /* --- DYNAMIC LIMITATIONS --- */
+    min-width: 400px; 
+    max-width: 1200px ;
+    max-height: 1300px ;
+}
+
+/* --- THE INNER IMAGE GRID --- */
+.masonry-gallery {
+    padding: 20px;
+    overflow-y: auto; /* IMPORTANT: Adds a scrollbar if images go past the bottom! */
+    column-count: 2;  
+    column-gap: 15px; 
+}
+
+.masonry-gallery img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 15px; 
+    display: block;
+    border: 1px solid #333; 
+}
+
+/* Switches to 1 column if they shrink the window really small */
+@media (max-width: 500px) {
+    .masonry-gallery {
+        column-count: 1; 
+    }
+}
+
+/* Make it obvious the masonry images are clickable */
+.masonry-gallery img {
+    cursor: pointer;
+}
+
+
+
+/* --- THE RESTORED ZOOM OVERLAY --- */
+.zoomed-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(25, 42, 44, 0.95); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* --- THIS IS ESSENTIAL --- */
+    z-index: 50; /* Needs to be lower than the header (60), but higher than the masonry grid! */
+    cursor: pointer;
+}
+
+.zoomed-view img {
+    width: 90%;
+    max-height: 90%;      /* Prevents super tall images from overflowing the top/bottom */
+    object-fit: contain;  /* Keeps the image perfectly proportioned */
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.5); /* Gives it some depth */
+}
+
+
+/* --- THE SKY TEXT --- */
+#sky-text {
+    position: absolute;
+    top: 27%; /* Pushes it down into the sky. Adjust as needed! */
+    width: 100%;
+    text-align: center;
+    font-family: 'PixelFont', monospace;
+    font-size: 4vw; /* Scales automatically with the width of the screen */
+    color: rgba(25, 42, 44, 0.95);
+    opacity: 0.5; /* Makes it look distant and atmospheric */
+    
+    /* THE MAGIC PARALLAX LAYER FIX */
+    z-index: 0; /* Forces it to sit BEHIND the cloud layer (which is z-index: 1) */
+    
+    margin: 0;
+    pointer-events: none; /* Prevents it from interfering with your mouse */
+    user-select: none; /* Prevents the text from turning blue if you click and drag */
+}
+
+/* --- THE SKY TEXT --- */
+#sky-name {
+    position: absolute;
+    top: 20%; /* Pushes it down into the sky. Adjust as needed! */
+    width: 100%;
+    text-align: center;
+    font-family: 'PixelFont', monospace;
+    font-size: 3vw; /* Scales automatically with the width of the screen */
+    color: rgba(25, 42, 44, 0.95);
+    opacity: 0.5; /* Makes it look distant and atmospheric */
+    
+    /* THE MAGIC PARALLAX LAYER FIX */
+    z-index: 0; /* Forces it to sit BEHIND the cloud layer (which is z-index: 1) */
+    
+    margin: 0;
+    pointer-events: none; /* Prevents it from interfering with your mouse */
+    user-select: none; /* Prevents the text from turning blue if you click and drag */
+}
+
+
+/* Window title */
+.title-span {
+    width: 100%;
+}
+
+/* --- YOUR TITLE CSS (With the fixed font comma!) --- */
+.internal-title {
+    font-family: 'PixelFont', monospace; /* The comma here is absolutely required! */
+    font-size: 50px;
+    color:  #ffffff; 
+    padding-bottom: 10px; 
+    margin-bottom: 30px;
+}
+
+.hero-header {
+    display: flex;
+    align-items: center; /* Aligns the image and title horizontally */
+    justify-content: space-between;
+    gap: 40px;
+    
+    /* The dashed line now sits under the entire row! */
+    border-bottom: 2px dashed #ffffff; 
+    padding-bottom: 30px; 
+    margin-bottom: 30px;
+}
+
+/* --- THE INDIVIDUAL LETTER WOBBLE --- */
+.wobble-letter {
+    display: inline-block; /* CRITICAL: Transforms only work on block/inline-block elements! */
+    animation: gentleWobble 4s ease-in-out infinite;
+}
+
+/* The Keyframes: Gently floats up and tilts 2 degrees, then returns */
+@keyframes gentleWobble {
+    0%, 100% { 
+        transform: translateY(0px) rotate(0deg); 
+    }
+    50% { 
+        transform: translateY(-8px) rotate(2deg); 
+    }
+}
+
+/* ========================================================= */
+/* --- ANTHRO MACHINE MODAL LAYOUT --- */
+/* ========================================================= */
+.split-media {
+    display: flex;
+    width: 100%;
+    gap: 20px;
+}
+
+.media-left {
+    flex: 1; 
+    display: flex;
+    margin: 20px;
+    justify-content: center; /* Centers the video horizontally */
+    align-items: center; /* Centers the video vertically */
+}
+
+.media-right.project-gallery-6imgs {
+    flex: 2; 
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 10px;
+}
+
+.anthro-modal-layout {
+    display: flex;
+    flex-direction: column;
+
+    margin: 20px;
+    
+    /* --- THE FIX: ENABLE SCROLLING --- */
+    overflow-y: auto; /* Adds a vertical scrollbar when content is too tall */
+    overflow-x: hidden; /* Prevents accidental horizontal scrolling */
+    
+}
+/* --- THE SWIPE CAROUSEL --- */
+.anthro-carousel-wrapper {
+    /* 1. Shrink it so it doesn't overwhelm the page */
+    width: 90%; 
+    
+    /* 2. Center it perfectly in the middle of the window */
+    margin: 0 auto; 
+    
+    /* 3. THE FIX: Change from widescreen to Poster shape! */
+    aspect-ratio: 3 / 4; 
+    
+    flex-shrink: 0; 
+    overflow: hidden; 
+    position: relative;
+}
+
+.anthro-carousel-track {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s ease-in-out; /* The smooth "swipe" speed! */
+}
+
+.anthro-carousel-track img {
+    min-width: 100%; 
+    height: 100%;
+    
+    /* 4. Switch back to contain so the poster is NEVER chopped off */
+    object-fit: contain; 
+}
+
+.anthro-main-video {
+    padding: 20px; /* Gives it a nice even border of space on all sides */
+
+    box-sizing: border-box; 
+ 
+}
+
+/* ========================================================= */
+/* --- GASTRO LUD FLASHING ANIMATION --- */
+/* ========================================================= */
+
+.gastro-flasher {
+    position: relative;
+    width: 100%;
+    
+    /* Change this ratio if your book photos are a different shape! */
+    aspect-ratio: 4 / 3; 
+    
+    margin-bottom: 20px; /* Space before the masonry grid starts */
+    overflow: hidden;
+}
+
+.gastro-flasher img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    
+    /* Hide all images by default */
+    opacity: 0; 
+    
+    /* NO smooth transition here! We want an instant, harsh cut. */
+    transition: none; 
+}
+
+/* Only the image with this class will actually be visible */
+.gastro-flasher img.active-flash {
+    opacity: 1; 
+}
+
+/* ========================================================= */
+/* ---(PAUL!!!) --- */
+/* ========================================================= */
+
+.masonry-card {
+    /* CRITICAL: Stops the browser from splitting the image and text across different columns! */
+    break-inside: avoid; 
+    
+    margin-bottom: 15px; 
+    background-color: #192a2c; /* Retro dark backing for the caption */
+    border: 1px solid #333;
+}
+
+/* Overrides the default masonry image rules so it sits perfectly flush inside the card */
+.masonry-card img {
+    margin-bottom: 0; 
+    border: none; 
+    border-bottom: 2px solid #192a2c; /* Creates a clean dividing line above the text */
+}
+
+/* The Description Text */
+.masonry-caption {
+    margin: 0;
+    padding: 8px 10px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+}
+
+/* ========================================================= */
+/* --- CSM SHOW EDITORIAL LAYOUT --- */
+/* ========================================================= */
+
+.csm-modal-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Breathing room between all the rows */
+}
+
+/* --- 1. FULL WIDTH IMAGES --- */
+.csm-full-width img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* --- 2. THREE-COLUMN ROW --- */
+.csm-three-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.csm-three-col img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+}
+
+/* --- 3. THE 4-THEN-3 GIF GRID --- */
+.csm-gif-grid {
+    display: flex;
+    flex-wrap: wrap; /* Allows them to spill onto the next line */
+    
+    /* THE MAGIC TRICK: This tells the 3 leftover GIFs to group up in the exact center! */
+    justify-content: center; 
+    
+    gap: 15px;
+}
+
+.csm-gif-card {
+    /* 25% means 4 per row. We subtract 12px to mathematically account for the gap! */
+    width: calc(25% - 12px); 
+    
+    min-width: 100px; /* Safety net so they don't vanish on tiny screens */
+    margin-bottom: 0; /* Clears the old masonry-card margin */
+}
+
+/* Ensure the gifs fit perfectly inside their cards */
+.csm-gif-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ========================================================= */
+/* --- SPACEMAN GALLERY LAYOUT --- */
+/* ========================================================= */
+
+.spaceman-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Space between the poster and the grid */
+}
+
+/* --- THE MAIN POSTER --- */
+.spaceman-hero img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: 2px solid #192a2c;
+    margin-bottom: 10px;
+}
+
+/* --- THE 2-COLUMN GRID --- */
+.spaceman-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.spaceman-grid img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: 1px solid #192a2c;
+}
+
+/* ========================================================= */
+/* --- NATURE GALLERY LAYOUT --- */
+/* ========================================================= */
+
+.nature-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; 
+}
+
+/* --- THE 1-COLUMN FULL WIDTH GRID --- */
+.single-col-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between each image stacked on top of each other */
+}
+
+.single-col-gallery img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.nature-flasher {
+    display: grid; 
+    
+    /* 1. Tell the Grid: "You have exactly one column that takes up all the space." */
+    grid-template-columns: 1fr; 
+    
+    width: 100%;
+    
+    /* 2. Tell Flexbox: "DO NOT crush this box! Let it be as tall as the images inside it." */
+    flex-shrink: 0; 
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.nature-flasher img {
+    grid-area: 1 / 1; 
+    width: 100%;
+    height: auto;
+    display: block;
+    opacity: 0; 
+    transition: none; 
+}
+
+/* Turns the active image on */
+.nature-flasher img.active-flash {
+    opacity: 1; 
+}
+
+/* ========================================================= */
+/* --- AMBIENT HOMESCREEN BACKGROUND --- */
+/* ========================================================= */
+
+#scenic-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    opacity: 70%;
+    z-index: -10; /* Keeps it behind everything else */
+    overflow: hidden; /* Hides the clouds before they enter the screen */
+    pointer-events: none; /* CRITICAL: Allows you to click the desktop icons through it! */
+
+    background-color: #adb4bb; /* A soft retro blue. Change this hex code to anything you like! */
+}
+
+/* The Ground */
+#ground-layer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    z-index: 2; /* Forces the ground to sit in front of the clouds */
+    display: block;
+}
+
+/* The Sky (Cloud Container) */
+#cloud-layer {
+    position: absolute;
+    opacity: 50%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* Sits behind the ground layer */
+}
+
+/* Base Cloud Styling */
+.animated-cloud {
+    position: absolute;
+    opacity: 0.8; /* Makes them slightly transparent for subtleness */
+}
+
+/* The Animation: Move from off-screen Right to off-screen Left */
+@keyframes floatCloud {
+    from {
+        left: 100vw; 
+    }
+    to {
+        left: -500px; /* Moves it safely past the left edge before deleting */
+    }
+}
